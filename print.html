@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAN Printer Text Input</title>
-     <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -73,6 +73,19 @@
             const printText = document.getElementById("printText").value;
             const characterTable = document.getElementById("characterTable").value;
 
+            // Validate IP format
+            const ipPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            if (!ipPattern.test(printerIp)) {
+                alert("Please enter a valid IP address in the format x.x.x.x");
+                return;
+            }
+
+            // Validate port range
+            if (printerPort < 0 || printerPort > 65535) {
+                alert("Please enter a port number between 0 and 65535.");
+                return;
+            }
+
             try {
                 const response = await fetch("print_text.php", {
                     method: "POST",
@@ -95,10 +108,10 @@
         <h1>Print Text to LAN Printer</h1>
         <form onsubmit="handleFormSubmit(event)">
             <label for="printerIp">Printer IP Address:</label>
-            <input type="text" id="printerIp" name="printerIp" value="192.168.24.60" required>
+            <input type="text" id="printerIp" name="printerIp" placeholder="192.168.24.60" value="192.168.24.60"required pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" title="Enter a valid IP in the format x.x.x.x">
 
-            <label for="printerPort">Printer Port:</label>
-            <input type="number" id="printerPort" name="printerPort" value="9100" required>
+            <label for="printerPort">Printer Port (0-65535):</label>
+            <input type="number" id="printerPort" name="printerPort" value="9100" required min="0" max="65535">
 
             <label for="printText">Enter Text to Print:</label>
             <textarea id="printText" name="printText" required>Τί είναι το Lorem Ipsum;
