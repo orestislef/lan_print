@@ -1,5 +1,3 @@
-Here’s an updated `README.md` file without the image handling feature:
-
 ---
 
 # LAN Printer Text Printing with PHP
