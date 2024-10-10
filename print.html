@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAN Printer Text Input</title>
-    <style>
+     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -71,6 +71,7 @@
             const printerIp = document.getElementById("printerIp").value;
             const printerPort = document.getElementById("printerPort").value;
             const printText = document.getElementById("printText").value;
+            const characterTable = document.getElementById("characterTable").value;
 
             try {
                 const response = await fetch("print_text.php", {
@@ -78,7 +79,7 @@
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: `printerIp=${printerIp}&printerPort=${printerPort}&printText=${encodeURIComponent(printText)}`
+                    body: `printerIp=${printerIp}&printerPort=${printerPort}&printText=${encodeURIComponent(printText)}&characterTable=${characterTable}`
                 });
 
                 const result = await response.text();
@@ -100,7 +101,11 @@
             <input type="number" id="printerPort" name="printerPort" value="9100" required>
 
             <label for="printText">Enter Text to Print:</label>
-            <textarea id="printText" name="printText" required>This is a test</textarea>
+            <textarea id="printText" name="printText" required>Τί είναι το Lorem Ipsum;
+Το Lorem Ipsum είναι απλά ένα κείμενο χωρίς νόημα για τους επαγγελματίες της τυπογραφίας και στοιχειοθεσίας. Το Lorem Ipsum είναι το επαγγελματικό πρότυπο όσον αφορά το κείμενο χωρίς νόημα, από τον 15ο αιώνα, όταν ένας ανώνυμος τυπογράφος πήρε ένα δοκίμιο και ανακάτεψε τις λέξεις για να δημιουργήσει ένα δείγμα βιβλίου. Όχι μόνο επιβίωσε πέντε αιώνες, αλλά κυριάρχησε στην ηλεκτρονική στοιχειοθεσία, παραμένοντας με κάθε τρόπο αναλλοίωτο. Έγινε δημοφιλές τη δεκαετία του '60 με την έκδοση των δειγμάτων της Letraset όπου περιελάμβαναν αποσπάσματα του Lorem Ipsum, και πιο πρόσφατα με το λογισμικό ηλεκτρονικής σελιδοποίησης όπως το Aldus PageMaker που περιείχαν εκδοχές του Lorem Ipsum.</textarea>
+
+            <label for="characterTable">Character Table:</label>
+            <input type="number" id="characterTable" name="characterTable" value="7" required>
 
             <button type="submit">Print</button>
         </form>

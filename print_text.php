@@ -8,28 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $printerIp = $_POST['printerIp'];
     $printerPort = $_POST['printerPort'];
     $printText = $_POST['printText'];
-    $characterTable = isset($_POST['characterTable']) ? intval($_POST['characterTable']) : 0;
-
-    try {
-        $connector = new NetworkPrintConnector($printerIp, $printerPort);
-        $printer = new Printer($connector);
-
-        $printer->selectCharacterTable($characterTable); // Set character table
-        $printer->setJustification(Printer::JUSTIFY_CENTER);
-        $printer->text("Character Table $characterTable: $printText\n");
-        $printer->cut();
-
-        $printer->close();
-        echo "Printed with Character Table $characterTable.";<?php
-require __DIR__ . '/vendor/autoload.php';
-
-use Mike42\Escpos\Printer;
-use Mike42\Escpos\PrintConnectors\NetworkPrintConnector;
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $printerIp = $_POST['printerIp'];
-    $printerPort = $_POST['printerPort'];
-    $printText = $_POST['printText'];
+    $characterTable = $_POST['characterTable'];
 
     try {
         // Log connection attempt
@@ -40,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $printer = new Printer($connector);
         error_log("Successfully connected to the printer.");
 
-        // Set character table 17 for Greek characters
-        error_log("Selecting character table 17 for Greek characters.");
-        $printer->selectCharacterTable(17);
+        // Set character table based on user input
+        error_log("Selecting character table $characterTable for custom characters.");
+        $printer->selectCharacterTable((int)$characterTable);
 
         // Set justification to center
         $printer->setJustification(Printer::JUSTIFY_CENTER);
