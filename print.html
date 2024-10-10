@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN Printer Text Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 360px;
+            width: 100%;
+            background-color: #ffffff;
+            padding: 20px 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .container h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .container label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            text-align: left;
+        }
+        .container input[type="text"],
+        .container input[type="number"],
+        .container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .container textarea {
+            height: 60px; /* Initial height for the textarea */
+        }
+        .container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+        .container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const printerIp = document.getElementById("printerIp").value;
+            const printerPort = document.getElementById("printerPort").value;
+            const printText = document.getElementById("printText").value;
+
+            try {
+                const response = await fetch("print_text.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `printerIp=${printerIp}&printerPort=${printerPort}&printText=${encodeURIComponent(printText)}`
+                });
+
+                const result = await response.text();
+                alert(result);
+            } catch (error) {
+                alert("An error occurred: " + error.message);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Print Text to LAN Printer</h1>
+        <form onsubmit="handleFormSubmit(event)">
+            <label for="printerIp">Printer IP Address:</label>
+            <input type="text" id="printerIp" name="printerIp" value="192.168.24.60" required>
+
+            <label for="printerPort">Printer Port:</label>
+            <input type="number" id="printerPort" name="printerPort" value="9100" required>
+
+            <label for="printText">Enter Text to Print:</label>
+            <textarea id="printText" name="printText" required>This is a test</textarea>
+
+            <button type="submit">Print</button>
+        </form>
+    </div>
+</body>
+</html>
