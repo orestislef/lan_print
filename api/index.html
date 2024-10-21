@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Printer Status</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            text-align: center;
+        }
+
+        .lang-buttons {
+            margin-bottom: 20px;
+        }
+
+        .lang-buttons button {
+            padding: 10px;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-buttons button:hover {
+            background-color: #444;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Inner shadow */
+        }
+
+        button.check-status {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
+        }
+
+        button.check-status:hover {
+            background-color: #444;
+        }
+
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Table shadow */
+        }
+
+        .status-table th, .status-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .status-table th {
+            background-color: #f8f8f8;
+        }
+
+        .status-table td {
+            background-color: #fafafa;
+        }
+
+        .circle {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #333; /* Black border for circle */
+            margin-right: 10px;
+        }
+
+        .status-yes .circle {
+            background-color: #fff; /* White circle for Yes */
+        }
+
+        .status-no .circle {
+            background-color: #000; /* Black circle for No */
+        }
+
+        .loading {
+            color: #333;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"], button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1 id="title">Printer Status</h1>
+
+<div class="container">
+    <!-- Language buttons -->
+    <div class="lang-buttons">
+        <button id="lang-en" onclick="setLanguage('en')">English</button>
+        <button id="lang-gr" onclick="setLanguage('gr')">Ελληνικά</button>
+    </div>
+
+    <!-- Input field to enter the IP address -->
+    <label id="label-ip" for="ipAddress">Enter Printer IP Address:</label>
+    <input type="text" id="ipAddress" value="192.168.24.60" placeholder="Enter IP Address">
+
+    <!-- Button to fetch printer status manually -->
+    <button class="check-status" onclick="fetchPrinterStatus()">Check Status</button>
+
+    <!-- Status container where the results will be shown -->
+    <div id="statusContainer" class="loading">Enter the IP address and press 'Check Status' to get printer status.</div>
+</div>
+
+<script>
+    const langText = {
+        en: {
+            title: "Printer Status",
+            labelIp: "Enter Printer IP Address:",
+            checkStatus: "Check Status",
+            loading: "Fetching printer status...",
+            enterIp: "Enter the IP address and press 'Check Status' to get printer status.",
+            errorFetching: "Error fetching printer status. Make sure the printer is online.",
+            tableHeaders: ["Status", "Value"],
+            statusDescriptions: {
+                "Cover Is Open": "Cover Is Open",
+                "Cutter Error": "Cutter Error",
+                "Paper End": "Paper End",
+                "Paper Near End": "Paper Near End",
+                "Printer Off-Line": "Printer Off-Line"
+            }
+        },
+        gr: {
+            title: "Κατάσταση Εκτυπωτή",
+            labelIp: "Εισαγάγετε τη διεύθυνση IP του εκτυπωτή:",
+            checkStatus: "Έλεγχος Κατάστασης",
+            loading: "Λήψη της κατάστασης του εκτυπωτή...",
+            enterIp: "Εισαγάγετε τη διεύθυνση IP και πατήστε 'Έλεγχος Κατάστασης' για να δείτε την κατάσταση του εκτυπωτή.",
+            errorFetching: "Σφάλμα κατά την ανάκτηση της κατάστασης του εκτυπωτή. Βεβαιωθείτε ότι ο εκτυπωτής είναι συνδεδεμένος.",
+            tableHeaders: ["Κατάσταση", "Τιμή"],
+            statusDescriptions: {
+                "Cover Is Open": "Το Κάλυμμα Είναι Ανοιχτό",
+                "Cutter Error": "Σφάλμα Κόφτη",
+                "Paper End": "Τέλος Χαρτιού",
+                "Paper Near End": "Λήξη Χαρτιού Κοντά",
+                "Printer Off-Line": "Ο Εκτυπωτής Είναι Εκτός Λειτουργίας"
+            }
+        }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+
+        // Set all the text content based on the selected language
+        document.getElementById('title').textContent = langText[lang].title;
+        document.getElementById('label-ip').textContent = langText[lang].labelIp;
+        document.querySelector('.check-status').textContent = langText[lang].checkStatus;
+        document.getElementById('statusContainer').textContent = langText[lang].enterIp;
+    }
+
+    // Function to fetch the printer status from the PHP API
+    function fetchPrinterStatus() {
+        const ip = document.getElementById('ipAddress').value; // Get the IP address from input field
+        const apiUrl = `http://localhost:8080/print/api/printer_status.php?ip=${ip}`;
+
+        // Show loading text while fetching data
+        document.getElementById('statusContainer').innerHTML = `<div class="loading">${langText[currentLang].loading}</div>`;
+
+        // Make a fetch request to the PHP API
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                // Handle and display the data
+                displayPrinterStatus(data);
+            })
+            .catch(error => {
+                document.getElementById('statusContainer').innerHTML = langText[currentLang].errorFetching;
+                console.error('Error:', error);
+            });
+    }
+
+    // Function to display the printer status in a table
+    function displayPrinterStatus(statusData) {
+        const statusContainer = document.getElementById('statusContainer');
+        let tableHtml = `<table class="status-table">
+                            <tr>
+                                <th>${langText[currentLang].tableHeaders[0]}</th>
+                                <th>${langText[currentLang].tableHeaders[1]}</th>
+                            </tr>`;
+
+        // Loop through the JSON data and create table rows
+        for (let key in statusData) {
+            let value = statusData[key].toLowerCase();  // Convert to lowercase for case-insensitive comparison
+            let className = (value === 'yes') ? 'status-yes' : 'status-no';
+            let circleHtml = `<span class="circle"></span>`;  // Circle element
+
+            // Translate status descriptions
+            let translatedKey = langText[currentLang].statusDescriptions[key] || key;
+
+            tableHtml += `<tr class="${className}">
+                            <td>${translatedKey}</td>
+                            <td>${circleHtml} ${statusData[key]}</td>
+                          </tr>`;
+        }
+
+        tableHtml += `</table>`;
+        statusContainer.innerHTML = tableHtml;
+    }
+
+    // Automatically set the default language on page load
+    setLanguage('en');
+
+    // Automatically fetch the printer status every 5 seconds
+    setInterval(fetchPrinterStatus, 5000);
+</script>
+
+</body>
+</html>
